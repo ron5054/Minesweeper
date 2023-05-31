@@ -9,13 +9,14 @@
     <title>MineSweeper</title>
 </head>
 
-<body onload="onInit()">
+<body onload="onInit()" onkeyup="onRightClick(event)">
     <h1>minesweeper</h1>
-    <table class="game-board"></table>
-
-
-
-    <!-- <footer>yaron levy</footer> -->
+    <button onclick="onDifficulty(4,2)">easy</button> <button onclick="onDifficulty(8,14)">Medium</button> <button
+        onclick="onDifficulty(12,32)">Hard</button>
+    <hr>
+    <button onclick="onReset()" class="happy">🙂</button>
+    <table oncontextmenu="return false;" class=" game-board"></table>
+    <footer>yaron levy</footer>
     <script src="js/main.js"></script>
 </body>
 
