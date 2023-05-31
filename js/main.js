@@ -106,20 +106,7 @@ function onCellClicked(elCell, i, j) {
     console.log('Cell clicked: ', elCell, i, j)
     if (gBoard[i][j].isMarked) return
     if (gBoard[i][j].isMine) {
-        //update database
-        for (var i = 0; i < gBoard.length; i++) {
-            for (var j = 0; j < gBoard[i].length; j++) {
-                gBoard[i][j].isShown = true
-            }
-        }
-        //reveal all cells
-        var cells = document.getElementsByClassName('hidden')
-        for (var k = 0; k < cells.length; i++) {
-            cells[k].classList.replace('hidden', 'empty')
-        }
-        elCell.classList.replace('empty', 'dead')
-        gameOver()
-        return
+        isMine(elCell)
     } else {
         gBoard[i][j].isShown = true
         elCell.classList.replace('hidden', 'empty');
@@ -131,7 +118,22 @@ function onCellClicked(elCell, i, j) {
 //     if (event.button === 2) elCell.innerText = flag
 //     console.log(event)
 // }
-
+function isMine(elCell) {
+    //update database
+    for (var i = 0; i < gBoard.length; i++) {
+        for (var j = 0; j < gBoard[i].length; j++) {
+            gBoard[i][j].isShown = true
+        }
+    }
+    //reveal all cells
+    var cells = document.getElementsByClassName('hidden')
+    for (var k = 0; k < cells.length; i++) {
+        cells[k].classList.replace('hidden', 'empty')
+    }
+    elCell.classList.replace('empty', 'dead')
+    gameOver()
+    return
+}
 
 
 function countMinesAround(mat, rowIdx, colIdx) {
