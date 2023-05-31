@@ -1,0 +1,20 @@
+body {
+    text-align: center;
+}
+
+.game-board,
+td {
+    border: 2px solid black;
+    margin: auto;
+
+}
+
+.game-board td {
+    height: 20px;
+    width: 20px;
+}
+
+.hidden {
+    color: transparent;
+
+}
