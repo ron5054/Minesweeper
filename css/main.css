@@ -1,11 +1,20 @@
 body {
     text-align: center;
+    background-color: rgb(245, 245, 245);
 
+}
+
+h1 {
+    font-size: 50px;
+}
+
+h1 img {
+    height: 20px;
 }
 
 .game-board,
 td {
-    border: 1px solid black;
+    border: 2px solid black;
     border-collapse: collapse;
     margin: auto;
     margin-top: 30px;
@@ -14,13 +23,16 @@ td {
 .game-board td {
     height: 20px;
     width: 20px;
+    font-weight: 900;
     /* background-color: #e2e2e2; */
 }
 
 .hidden {
-    color: transparent;
-
+    opacity: 0;
+    /* content-visibility: hidden; */
 }
+
+
 
 .empty {
     background-color: #8b8b8b;
@@ -30,11 +42,19 @@ td {
     background-color: crimson;
 }
 
-
+.flag {
+    font-size: 12px;
+}
 
 footer {
     background-color: #e2e2e2;
-    margin-top: 400px
+    border-top: 3px solid #030303;
+    height: 30px;
+    font: bold;
+    position: fixed;
+    bottom: 0;
+
+    width: 100%;
 }
 
 button {
@@ -53,4 +73,29 @@ button:hover {
     background-color: silver;
     cursor: pointer;
     transform: translate(+2px, +2px);
+}
+
+.dark-mode {
+    background-color: rgb(87, 87, 87);
+}
+
+.lives {
+    margin-left: 5px;
+}
+
+.flags {
+    margin-right: 5px;
+}
+
+.timer {
+    font-size: 20px;
+    color: black;
+    padding: 10px 20px;
+    border-radius: 5px;
+
+}
+
+.timer::before {
+    content: "⏱";
+    margin-right: 5px;
 }

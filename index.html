@@ -6,17 +6,35 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/main.css">
+    <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
     <title>MineSweeper</title>
 </head>
 
 <body onload="onInit()" onkeyup="onRightClick(event)">
-    <h1>minesweeper</h1>
+    <h1>minesweeper <img src="img/mine.png" alt=""></h1>
     <button onclick="onDifficulty(4,2)">easy</button> <button onclick="onDifficulty(8,14)">Medium</button> <button
         onclick="onDifficulty(12,32)">Hard</button>
     <hr>
-    <button onclick="onReset()" class="happy">🙂</button>
+    <button class="flags">🚩 2</button><button onclick="onReset()" class="happy">🙂</button><button
+        class="lives"></button>
+    <br>
+    <br>
+    <div class="timer"></div>
     <table oncontextmenu="return false;" class=" game-board"></table>
-    <footer>yaron levy</footer>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <button onclick="onDarkMode()">Dark Mode 🌚</button>
+    <footer>Yaron levy &copy;</footer>
     <script src="js/main.js"></script>
 </body>
 

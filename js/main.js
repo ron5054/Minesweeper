@@ -1,9 +1,14 @@
 'use strict'
+var gElcell = null
 var gBoard
 const mine = '💣'
 const empty = ''
 const flag = '🚩'
-const boom = '💥'
+const life = '❤️'
+var gLife = 3
+var gFlages = 2
+var gStartTime = null
+var gTimerInterval = null
 
 var gGame = {
     isOn: false,
@@ -18,10 +23,18 @@ var gLevel = {
 }
 
 function onInit() {
+    gTimerInterval = null
+    gStartTime = null
+    gStartTime = Date.now()
+    gLife = 3
+    gLevel.size = 4
     gBoard = buildBoard()
     randomMines(2)  // need to move to oncellclicked
     addMinesCount(gBoard)// need to move to oncellclicked
     renderBoard(gBoard) // need to move to oncellclicked
+    renderlives()
+    addFlagOnRightClick()
+    gGame.isOn = true
     console.log(gBoard);
 }
 
@@ -84,7 +97,7 @@ function renderBoard(board) {
             else cellcontent = board[i][j].minesAroundCount
             strHTML += `\t<td data-i="${i}" data-j="${j}" class="cell ${className}" 
             onclick="onCellClicked(this, ${i}, ${j}) " >${cellcontent}
-         </td>\n`
+            </td>\n`
         }
     }
     strHTML += '</tr>'
@@ -94,30 +107,42 @@ function renderBoard(board) {
 }
 // set Difficulty
 function onDifficulty(size, mines) {
+    gTimerInterval = null
+    gStartTime = null
+    gStartTime = Date.now()
+    document.querySelector('.happy').innerText = '🙂'
     gLevel.size = size
-    console.log(gLevel.size);
     gBoard = buildBoard()
     randomMines(mines)
     addMinesCount(gBoard)
     renderBoard(gBoard)
+    gLife = 3
+    renderlives()
+    gFlages = mines
+    renderFlagsCounter()
+    addFlagOnRightClick()
 }
 
 function onCellClicked(elCell, i, j) {
-    console.log('Cell clicked: ', elCell, i, j)
+    if (!gGame.isOn) return
+    if (!gTimerInterval) gTimerInterval = setInterval(gameTimer, 1)
     if (gBoard[i][j].isMarked) return
     if (gBoard[i][j].isMine) {
-        isMine(elCell)
+        elCell.classList.replace('hidden', 'dead')
+        gBoard[i][j].isShown = true
+        gLife--
+        renderlives()
+        if (!gLife) {
+            isMine(elCell)
+            return
+        }
     } else {
         gBoard[i][j].isShown = true
         elCell.classList.replace('hidden', 'empty');
+        console.log('Cell clicked: ', elCell, i, j)
     }
-    console.log(gBoard[i][j]);
 }
 
-// onRightClick(event)() {
-//     if (event.button === 2) elCell.innerText = flag
-//     console.log(event)
-// }
 function isMine(elCell) {
     //update database
     for (var i = 0; i < gBoard.length; i++) {
@@ -136,29 +161,76 @@ function isMine(elCell) {
 }
 
 
-function countMinesAround(mat, rowIdx, colIdx) {
+function countMinesAround(board, rowIdx, colIdx) {
     var count = 0
     for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
-        if (i < 0 || i > mat.length - 1) continue
+        if (i < 0 || i > board.length - 1) continue
         for (var j = colIdx - 1; j <= colIdx + 1; j++) {
-            if (j < 0 || j > mat[0].length - 1) continue
+            if (j < 0 || j > board[0].length - 1) continue
             if (i === rowIdx && j === colIdx) continue
-            var currCell = mat[i][j]
+            var currCell = board[i][j]
             if (currCell.isMine) count++
         }
     }
     return count
 }
 
-
-
 function gameOver() {
     console.log('game over')
+    clearInterval(gTimerInterval)
     document.querySelector('.happy').innerText = '🤕'
+    gGame.isOn = false
 }
 
 function onReset() {
-    location.reload() // fix this shit!
+    clearInterval(gTimerInterval)
+    onInit()
+    document.querySelector('.happy').innerText = '🙂'
+}
+
+
+
+function addFlagOnRightClick() {
+    const gameBoard = document.querySelector('.game-board')
+    gameBoard.addEventListener('contextmenu', function (e) {
+        const targetCell = e.target
+        if (targetCell.tagName === 'TD') {
+            if (targetCell.classList.contains('flag')) {
+                targetCell.classList.add('hidden')
+                targetCell.classList.remove('flag')
+                targetCell.innerHTML = targetCell.getAttribute('data-content')
+                gFlages++
+            } else {
+                targetCell.classList.remove('hidden')
+                targetCell.classList.add('flag')
+                targetCell.setAttribute('data-content', targetCell.innerHTML)
+                targetCell.innerHTML = flag
+                gFlages--
+            }
+        }
+        renderFlagsCounter()
+    })
+}
+
+function onDarkMode() {
+    document.querySelector('body').classList.toggle('dark-mode')
+}
+
+function renderlives() {
+    document.querySelector('.lives').innerText = `${gLife} ${life}`
+}
+
+function renderFlagsCounter() {
+    document.querySelector('.flags').innerText = `${flag} ${gFlages}`
+}
+
+function gameTimer() {
+    var currentTime = Date.now();
+    var elapsedTime = (currentTime - gStartTime) / 1000;
+    var minutes = Math.floor(elapsedTime / 60);
+    var seconds = Math.floor(elapsedTime % 60);
+    var formattedTime = (minutes > 0 ? minutes + ':' : '') + (minutes > 0 && seconds < 10 ? '0' : '') + seconds;
+    document.querySelector('.timer').innerText = 'Time: ' + formattedTime;
 }
 
 
