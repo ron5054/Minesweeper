@@ -5,11 +5,11 @@ body {
 }
 
 h1 {
-    font-size: 50px;
+    font-size: 100px;
 }
 
 h1 img {
-    height: 20px;
+    height: 40px;
 }
 
 .game-board,
@@ -19,12 +19,13 @@ td {
     margin: auto;
     margin-top: 30px;
     color: aliceblue;
+    cursor: pointer;
 }
 
 .game-board td {
-    height: 20px;
-    width: 20px;
-    font-weight: 900;
+    height: 40px;
+    width: 40px;
+    font-size: xx-large;
     /* background-color: #e2e2e2; */
 }
 
@@ -50,11 +51,11 @@ td {
 footer {
     background-color: #e2e2e2;
     border-top: 3px solid #030303;
-    height: 30px;
+    height: 60px;
     font: bold;
     position: fixed;
     bottom: 0;
-
+    font-size: xx-large;
     width: 100%;
 }
 
@@ -62,10 +63,10 @@ button {
     color: aliceblue;
     border: 3px solid black;
     background-color: rgb(141, 135, 135);
-    height: 30px;
+    height: 60px;
     /* width: 120px; */
     border-radius: 40px;
-    font-size: 17px;
+    font-size: 34px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     transition: transform 0.3s;
 }
@@ -89,7 +90,7 @@ button:hover {
 }
 
 .timer {
-    font-size: 20px;
+    font-size: 40px;
     color: black;
     padding: 10px 20px;
     border-radius: 5px;
