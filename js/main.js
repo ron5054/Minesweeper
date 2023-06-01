@@ -9,6 +9,7 @@ var gLife = 3
 var gFlages = 2
 var gStartTime = null
 var gTimerInterval = null
+var gMines = 2
 
 var gGame = {
     isOn: false,
@@ -33,8 +34,8 @@ function onInit() {
     addMinesCount(gBoard)// need to move to oncellclicked
     renderBoard(gBoard) // need to move to oncellclicked
     renderlives()
-    addFlagOnRightClick()
     gGame.isOn = true
+    addFlagOnRightClick()
     console.log(gBoard);
 }
 
@@ -119,14 +120,16 @@ function onDifficulty(size, mines) {
     gLife = 3
     renderlives()
     gFlages = mines
+    gMines = mines
+    // addFlagOnRightClick() 
     renderFlagsCounter()
-    addFlagOnRightClick()
 }
 
 function onCellClicked(elCell, i, j) {
     if (!gGame.isOn) return
-    if (!gTimerInterval) gTimerInterval = setInterval(gameTimer, 1)
     if (gBoard[i][j].isMarked) return
+    if (!gTimerInterval) gTimerInterval = setInterval(gameTimer, 1)
+
     if (gBoard[i][j].isMine) {
         elCell.classList.replace('hidden', 'dead')
         gBoard[i][j].isShown = true
@@ -139,9 +142,34 @@ function onCellClicked(elCell, i, j) {
     } else {
         gBoard[i][j].isShown = true
         elCell.classList.replace('hidden', 'empty');
+        openNegs(i, j)
+        checkVictory()
         console.log('Cell clicked: ', elCell, i, j)
     }
 }
+
+
+//show negs with recursion - not working like it should - try to fix
+function openNegs(rowIdx, colIdx) {
+    for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
+        if (i < 0 || i > gBoard.length - 1) continue
+        for (var j = colIdx - 1; j <= colIdx + 1; j++) {
+            if (j < 0 || j > gBoard[0].length - 1) continue
+            if (i === rowIdx && j === colIdx) continue
+            var currCell = gBoard[i][j]
+            console.log(currCell)
+            if (!currCell.isMine && !currCell.isShown && !currCell.isMarked) {
+                currCell.isShown = true
+                var elCell = document.querySelector(`[data-i="${i}"][data-j="${j}"]`);
+                elCell.classList.remove("hidden")
+                elCell.classList.add("empty")
+                if (currCell.minesAroundCount === 0)
+                    openNegs(i, j)
+            }
+        }
+    }
+}
+
 
 function isMine(elCell) {
     //update database
@@ -160,7 +188,7 @@ function isMine(elCell) {
     return
 }
 
-
+// countes the mines around a cell 
 function countMinesAround(board, rowIdx, colIdx) {
     var count = 0
     for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
@@ -184,12 +212,13 @@ function gameOver() {
 
 function onReset() {
     clearInterval(gTimerInterval)
+    gFlages = gMines
+    renderFlagsCounter()
     onInit()
     document.querySelector('.happy').innerText = '🙂'
 }
 
-
-
+// need to fix - every second click on one of the buttons the flags are disabled 
 function addFlagOnRightClick() {
     const gameBoard = document.querySelector('.game-board')
     gameBoard.addEventListener('contextmenu', function (e) {
@@ -200,7 +229,9 @@ function addFlagOnRightClick() {
                 targetCell.classList.remove('flag')
                 targetCell.innerHTML = targetCell.getAttribute('data-content')
                 gFlages++
+                console.log(gFlages);
             } else {
+                if (!gFlages) return
                 targetCell.classList.remove('hidden')
                 targetCell.classList.add('flag')
                 targetCell.setAttribute('data-content', targetCell.innerHTML)
@@ -210,6 +241,21 @@ function addFlagOnRightClick() {
         }
         renderFlagsCounter()
     })
+}
+//needs refactor after lives feature added
+function checkVictory() {
+    var openCells = 0
+    for (var i = 0; i < gBoard.length; i++) {
+        for (var j = 0; j < gBoard[i].length; j++) {
+            if (gBoard[i][j].isShown) openCells++
+        }
+    }
+    if (openCells + gMines === gLevel.size ** 2) {
+        document.querySelector('.happy').innerText = '😎'
+        console.log('victory')
+        clearInterval(gTimerInterval)
+    }
+
 }
 
 function onDarkMode() {
