@@ -101,7 +101,10 @@ function renderBoard(board) {
             var cellcontent
             if (board[i][j].isMine) cellcontent = mine
             else cellcontent = board[i][j].minesAroundCount
-            strHTML += `\t<td data-i="${i}" data-j="${j}" class="cell${cellcontent} hidden" 
+            var cellClass = `cell${cellcontent}`
+            var cellClass = board[i][j].isShown ? 'empty' : 'hidden'
+
+            strHTML += `\t<td data-i="${i}" data-j="${j}" class="${cellClass} cell${cellcontent}" 
             onclick="onCellClicked(this, ${i}, ${j})" oncontextmenu=onMarkedCell(this,event,${i},${j})>${cellcontent}</td>\n`
         }
     }
@@ -109,7 +112,6 @@ function renderBoard(board) {
 
     document.querySelector('.game-board').innerHTML = strHTML
 }
-
 
 
 function onCellClicked(elCell, i, j) {
@@ -131,6 +133,7 @@ function onCellClicked(elCell, i, j) {
         renderFlagsCounter()
     }
 
+
     if (gBoard[i][j].isMine) {
         gGame.markedCount++ // a mine that was steped on while still have lives = marked mine
         elCell.classList.replace('hidden', 'dead')
@@ -146,6 +149,7 @@ function onCellClicked(elCell, i, j) {
         openNegs(i, j)
         checkVictory()
     }
+    console.log('Cell clicked: ', gBoard[i][j], elCell, i, j)
 }
 
 // show negs with recursion - not working like it should - try to fix - fixed!!
