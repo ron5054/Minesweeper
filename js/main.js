@@ -11,6 +11,7 @@ var gLife
 var gFlages
 var gStartTime = null
 var gTimerInterval = null
+var gFirstCell = false
 
 var gGame = {
     isOn: false,
@@ -35,13 +36,13 @@ function onInit(size = 4, mines = 2, lives = 1) {
     gStartTime = Date.now()
     gLife = lives
     gLevel.size = size
+    gLevel.mines = mines
     gFlages = mines
+    gFirstCell = false
     gBoard = buildBoard()
-    randomMines(mines)  // need to move to oncellclicked
-    addMinesCount(gBoard)// need to move to oncellclicked
-    renderBoard(gBoard) // need to move to oncellclicked
-    renderlives()// need to move to oncellclicked
-    renderFlagsCounter()// need to move to oncellclicked
+    renderBoard(gBoard)
+    renderlives()
+    renderFlagsCounter()
     // console.log(gBoard)
 }
 
@@ -76,19 +77,21 @@ function addMinesCount(board) {
 
 // set x number of mines in random positions
 function randomMines(mineNumber) {
+    if (gFirstCell) return
     var size = gLevel.size
     var mineCount = 0
 
     while (mineCount < mineNumber) {
         var row = getRandomInt(0, size - 1)
         var col = getRandomInt(0, size - 1)
-
-        if (!gBoard[row][col].isMine) {
+        if (!gBoard[row][col].isMine && !gBoard[row][col].isShown) {
             gBoard[row][col].isMine = true
             mineCount++
         }
     }
+    gFirstCell = true
 }
+
 
 function renderBoard(board) {
     var strHTML = ''
@@ -105,25 +108,32 @@ function renderBoard(board) {
     strHTML += '</tr>'
 
     document.querySelector('.game-board').innerHTML = strHTML
-
 }
 
 
 
 function onCellClicked(elCell, i, j) {
     console.log('Cell clicked: ', gBoard[i][j], elCell, i, j)
-    gGame.isOn
+    gGame.isOn = true
     if (gBoard[i][j].isMarked) return
     if (gBoard[i][j].isShown) return
     if (!gTimerInterval) {
         gStartTime = Date.now()
         gTimerInterval = setInterval(gameTimer, 1000)
     }
+    gBoard[i][j].isShown = true
+
+    if (!gFirstCell) {
+        randomMines(gLevel.mines)
+        addMinesCount(gBoard)
+        renderBoard(gBoard)
+        renderlives()
+        renderFlagsCounter()
+    }
 
     if (gBoard[i][j].isMine) {
-        elCell.classList.replace('hidden', 'dead')
-        gBoard[i][j].isShown = true
         gGame.markedCount++ // a mine that was steped on while still have lives = marked mine
+        elCell.classList.replace('hidden', 'dead')
         gLife--
         renderlives()
         if (!gLife) {
@@ -131,14 +141,12 @@ function onCellClicked(elCell, i, j) {
             return
         }
     } else {
-        gBoard[i][j].isShown = true
         gGame.shownCount++
         elCell.classList.replace('hidden', 'empty')
         openNegs(i, j)
         checkVictory()
     }
 }
-
 
 // show negs with recursion - not working like it should - try to fix - fixed!!
 function openNegs(rowIdx, colIdx) {
@@ -239,6 +247,8 @@ function checkVictory() {
         gGame.secsPassed = Math.floor((Date.now() - gStartTime) / 1000);
         clearInterval(gTimerInterval)
         console.log(`game time: ${gGame.secsPassed}'s`)
+        // document.querySelector('.score-board').innerText = `game time: ${gGame.secsPassed}'s`
+        gGame.isOn = false
     }
 
 }
