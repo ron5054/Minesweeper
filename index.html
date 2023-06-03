@@ -12,22 +12,23 @@
 
 <body onload="onInit()">
     <h1>minesweeper <img src="img/mine.png" alt=""></h1>
-    <button onclick="onDifficulty(4,2)">Easy</button> <button onclick="onDifficulty(8,14)">Medium</button> <button
-        onclick="onDifficulty(12,32)">Hard</button> <button onclick="onDarkMode()">Dark Mode 🌚</button>
+    <button class="btn-top" onclick="onInit(4,2,1)">Easy</button> <button class="btn-top"
+        onclick="onInit(8,14,2)">Medium</button> <button class="btn-top" onclick="onInit(12,32,3)">Hard</button>
+    <button class="btn-top" onclick="onDarkMode()">Dark Mode 🌚</button>
     <hr>
-    <button class="flags">🚩 2</button><button onclick="onReset()" class="happy">🙂</button><button
-        class="lives"></button>
     <br>
     <br>
     <div class="timer"></div>
-    <table oncontextmenu="return false;" class=" game-board"></table>
+    <div class="container">
+        <div class="flags">🚩 2</div><button onclick="onInit()" class="happy">🙂
+        </button>
+        <div class="lives"></div>
+        <table oncontextmenu="return false;" class=" game-board"></table>
+    </div>
     <br>
     <br>
     <br>
     <br>
-
     <footer>Yaron levy &copy;</footer>
     <script src="js/main.js"></script>
 </body>
-
-</html>

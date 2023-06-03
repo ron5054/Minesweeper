@@ -5,11 +5,12 @@ const mine = '💣'
 const empty = ''
 const flag = '🚩'
 const life = '❤️'
-var gLife = 3
-var gFlages = 2
+const happy = '🙂'
+const loser = ''
+var gLife
+var gFlages
 var gStartTime = null
 var gTimerInterval = null
-var gMines = 2
 
 var gGame = {
     isOn: false,
@@ -19,25 +20,31 @@ var gGame = {
 }
 
 var gLevel = {
-    size: 4,
-    mines: 2,
+    size: 0,
+    mines: 0,
 }
 
-function onInit() {
+function onInit(size = 4, mines = 2, lives = 1) {
+    clearInterval(gTimerInterval)
+    gGame.secsPassed = 0
+    gGame.shownCount = 0
+    gGame.markedCount = 0
+    document.querySelector('.happy').innerText = happy
     gTimerInterval = null
     gStartTime = null
     gStartTime = Date.now()
-    gLife = 3
-    gLevel.size = 4
+    gLife = lives
+    gLevel.size = size
+    gFlages = mines
     gBoard = buildBoard()
-    randomMines(2)  // need to move to oncellclicked
+    randomMines(mines)  // need to move to oncellclicked
     addMinesCount(gBoard)// need to move to oncellclicked
     renderBoard(gBoard) // need to move to oncellclicked
-    renderlives()
-    gGame.isOn = true
-    addFlagOnRightClick()
-    console.log(gBoard);
+    renderlives()// need to move to oncellclicked
+    renderFlagsCounter()// need to move to oncellclicked
+    // console.log(gBoard)
 }
+
 
 function buildBoard() {
     var board = []
@@ -54,13 +61,9 @@ function buildBoard() {
         }
 
     }
-
-    // board[0][0].isMine = true
-    // board[2][2].isMine = true
-    // board[2][3].isMine = true
-
     return board
 }
+
 // adds the negs numbers to the board
 function addMinesCount(board) {
     for (var i = 0; i < board.length; i++) {
@@ -89,16 +92,14 @@ function randomMines(mineNumber) {
 
 function renderBoard(board) {
     var strHTML = ''
-    var className = 'hidden'
     for (var i = 0; i < board.length; i++) {
-        strHTML += `<tr class="game-row">\n`
+        strHTML += `<tr>\n`
         for (var j = 0; j < board[i].length; j++) {
             var cellcontent
             if (board[i][j].isMine) cellcontent = mine
             else cellcontent = board[i][j].minesAroundCount
-            strHTML += `\t<td data-i="${i}" data-j="${j}" class="cell ${className}" 
-            onclick="onCellClicked(this, ${i}, ${j}) " >${cellcontent}
-            </td>\n`
+            strHTML += `\t<td data-i="${i}" data-j="${j}" class="cell${cellcontent} hidden" 
+            onclick="onCellClicked(this, ${i}, ${j})" oncontextmenu=onMarkedCell(this,event,${i},${j})>${cellcontent}</td>\n`
         }
     }
     strHTML += '</tr>'
@@ -106,50 +107,40 @@ function renderBoard(board) {
     document.querySelector('.game-board').innerHTML = strHTML
 
 }
-// set Difficulty
-function onDifficulty(size, mines) {
-    gTimerInterval = null
-    gStartTime = null
-    gStartTime = Date.now()
-    document.querySelector('.happy').innerText = '🙂'
-    gLevel.size = size
-    gBoard = buildBoard()
-    randomMines(mines)
-    addMinesCount(gBoard)
-    renderBoard(gBoard)
-    gLife = 3
-    renderlives()
-    gFlages = mines
-    gMines = mines
-    // addFlagOnRightClick() 
-    renderFlagsCounter()
-}
+
+
 
 function onCellClicked(elCell, i, j) {
-    if (!gGame.isOn) return
+    console.log('Cell clicked: ', gBoard[i][j], elCell, i, j)
+    gGame.isOn
     if (gBoard[i][j].isMarked) return
-    if (!gTimerInterval) gTimerInterval = setInterval(gameTimer, 1)
+    if (gBoard[i][j].isShown) return
+    if (!gTimerInterval) {
+        gStartTime = Date.now()
+        gTimerInterval = setInterval(gameTimer, 1000)
+    }
 
     if (gBoard[i][j].isMine) {
         elCell.classList.replace('hidden', 'dead')
         gBoard[i][j].isShown = true
+        gGame.markedCount++ // a mine that was steped on while still have lives = marked mine
         gLife--
         renderlives()
         if (!gLife) {
-            isMine(elCell)
+            stepedOn3Mines(elCell)
             return
         }
     } else {
         gBoard[i][j].isShown = true
-        elCell.classList.replace('hidden', 'empty');
+        gGame.shownCount++
+        elCell.classList.replace('hidden', 'empty')
         openNegs(i, j)
         checkVictory()
-        console.log('Cell clicked: ', elCell, i, j)
     }
 }
 
 
-//show negs with recursion - not working like it should - try to fix
+// show negs with recursion - not working like it should - try to fix - fixed!!
 function openNegs(rowIdx, colIdx) {
     for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
         if (i < 0 || i > gBoard.length - 1) continue
@@ -157,28 +148,31 @@ function openNegs(rowIdx, colIdx) {
             if (j < 0 || j > gBoard[0].length - 1) continue
             if (i === rowIdx && j === colIdx) continue
             var currCell = gBoard[i][j]
-            console.log(currCell)
+            // console.log(currCell)
             if (!currCell.isMine && !currCell.isShown && !currCell.isMarked) {
                 currCell.isShown = true
+                gGame.shownCount++
                 var elCell = document.querySelector(`[data-i="${i}"][data-j="${j}"]`);
                 elCell.classList.remove("hidden")
                 elCell.classList.add("empty")
-                if (currCell.minesAroundCount === 0)
+                if (!currCell.minesAroundCount) { //comment this line to win on one click :-)
                     openNegs(i, j)
+                }
             }
         }
     }
+    // console.log(gGame)
 }
 
 
-function isMine(elCell) {
+function stepedOn3Mines(elCell) {
     //update database
     for (var i = 0; i < gBoard.length; i++) {
         for (var j = 0; j < gBoard[i].length; j++) {
             gBoard[i][j].isShown = true
         }
     }
-    //reveal all cells
+    //reveal all cell elements
     var cells = document.getElementsByClassName('hidden')
     for (var k = 0; k < cells.length; i++) {
         cells[k].classList.replace('hidden', 'empty')
@@ -203,57 +197,48 @@ function countMinesAround(board, rowIdx, colIdx) {
     return count
 }
 
+
+function onMarkedCell(elCell, event, i, j) {
+    event.preventDefault()
+
+    gBoard[i][j].isMarked = !gBoard[i][j].isMarked
+    if (gBoard[i][j].isMarked && gBoard[i][j].isMine) gGame.markedCount++
+    else if (!gBoard[i][j].isMarked && gBoard[i][j].isMine) gGame.markedCount--
+    console.log('marked: ', gGame.markedCount);
+
+    if (elCell.classList.contains('flag')) {
+        elCell.classList.replace('flag', 'hidden')
+        elCell.innerHTML = elCell.getAttribute('data-content') //saves and restore the element content
+        gFlages++
+    } else {
+        if (!gFlages) return
+        if (elCell.classList.contains('empty') || elCell.classList.contains('dead')) return
+        elCell.classList.replace('hidden', 'flag')
+        elCell.setAttribute('data-content', elCell.innerHTML) //saves and restore the element content
+        elCell.innerHTML = flag
+        gFlages--
+    }
+    renderFlagsCounter()
+    checkVictory()
+}
+
 function gameOver() {
     console.log('game over')
+    gGame.secsPassed = Math.floor((Date.now() - gStartTime) / 1000);
     clearInterval(gTimerInterval)
     document.querySelector('.happy').innerText = '🤕'
     gGame.isOn = false
+    console.log(`game time: ${gGame.secsPassed}'s`)
 }
 
-function onReset() {
-    clearInterval(gTimerInterval)
-    gFlages = gMines
-    renderFlagsCounter()
-    onInit()
-    document.querySelector('.happy').innerText = '🙂'
-}
-
-// need to fix - every second click on one of the buttons the flags are disabled 
-function addFlagOnRightClick() {
-    const gameBoard = document.querySelector('.game-board')
-    gameBoard.addEventListener('contextmenu', function (e) {
-        const targetCell = e.target
-        if (targetCell.tagName === 'TD') {
-            if (targetCell.classList.contains('flag')) {
-                targetCell.classList.add('hidden')
-                targetCell.classList.remove('flag')
-                targetCell.innerHTML = targetCell.getAttribute('data-content')
-                gFlages++
-                console.log(gFlages);
-            } else {
-                if (!gFlages) return
-                targetCell.classList.remove('hidden')
-                targetCell.classList.add('flag')
-                targetCell.setAttribute('data-content', targetCell.innerHTML)
-                targetCell.innerHTML = flag
-                gFlages--
-            }
-        }
-        renderFlagsCounter()
-    })
-}
-//needs refactor after lives feature added
+//needs refactor after lives feature added - done! *not original rules*
 function checkVictory() {
-    var openCells = 0
-    for (var i = 0; i < gBoard.length; i++) {
-        for (var j = 0; j < gBoard[i].length; j++) {
-            if (gBoard[i][j].isShown) openCells++
-        }
-    }
-    if (openCells + gMines === gLevel.size ** 2) {
+    if (gGame.shownCount + gGame.markedCount === gLevel.size ** 2) {
         document.querySelector('.happy').innerText = '😎'
         console.log('victory')
+        gGame.secsPassed = Math.floor((Date.now() - gStartTime) / 1000);
         clearInterval(gTimerInterval)
+        console.log(`game time: ${gGame.secsPassed}'s`)
     }
 
 }
@@ -263,7 +248,7 @@ function onDarkMode() {
 }
 
 function renderlives() {
-    document.querySelector('.lives').innerText = `${gLife} ${life}`
+    document.querySelector('.lives').innerText = `${life.repeat(gLife)}`
 }
 
 function renderFlagsCounter() {
@@ -273,12 +258,9 @@ function renderFlagsCounter() {
 function gameTimer() {
     var currentTime = Date.now();
     var elapsedTime = (currentTime - gStartTime) / 1000;
-    var minutes = Math.floor(elapsedTime / 60);
-    var seconds = Math.floor(elapsedTime % 60);
-    var formattedTime = (minutes > 0 ? minutes + ':' : '') + (minutes > 0 && seconds < 10 ? '0' : '') + seconds;
-    document.querySelector('.timer').innerText = 'Time: ' + formattedTime;
+    var formattedTime = Math.floor(elapsedTime);
+    document.querySelector('.timer').innerText = formattedTime;
 }
-
 
 function getRandomInt(min, max) {
     min = Math.ceil(min)
