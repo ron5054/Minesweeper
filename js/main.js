@@ -25,7 +25,7 @@ var gLevel = {
     mines: 0,
 }
 
-function onInit(size = 4, mines = 2, lives = 1) {
+function onInit(size = 6, mines = 7, lives = 1) {
     clearInterval(gTimerInterval)
     gGame.secsPassed = 0
     gGame.shownCount = 0

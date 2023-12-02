@@ -7,14 +7,28 @@ body {
     box-sizing: border-box;
     text-align: center;
     background-color: rgb(245, 245, 245);
+    margin: 0;
 }
 
-h1 {
+header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+    height: 90px;
+    padding: 50px;
+}
+
+header h1 {
     font-size: 100px;
+    margin: 0;
+    padding-block-end: 20px;
 }
 
-h1 img {
-    height: 40px;
+header img {
+    height: 70px;
 }
 
 .btn-top {
@@ -27,7 +41,6 @@ h1 img {
     font-size: 30px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     transition: transform 0.3s;
-    /* border: none; */
 }
 
 .happy:hover,
@@ -55,34 +68,24 @@ h1 img {
 
 .container {
     background-color: rgb(170, 170, 170);
-    height: 470px;
-    width: 400px;
     display: inline-block;
     border: 3px solid grey;
+    min-width: 400px;
+}
+
+.game-container-header {
     padding: 20px;
-    cursor: default;
-    position: relative;
-    /* height: 100%; */
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
 }
 
 .lives {
-    position: absolute;
-    top: 3;
-    right: 0;
-    width: 150px;
-    border: none;
-    height: 60px;
     font-size: 30px;
-    background-color: rgb(170, 170, 170);
     color: aliceblue;
-    display: inline;
+    justify-self: end;
 }
 
 .happy {
-    /* position: absolute;
-    left: 50%;
-    transform: translateX(-50%); */
-    /* top: 3; */
     border-top: 3px rgb(220, 220, 220) solid;
     border-left: 3px rgb(220, 220, 220) solid;
     border-bottom: 3px rgb(145, 145, 145) solid;
@@ -93,33 +96,23 @@ h1 img {
 }
 
 .flags {
-    position: absolute;
-    top: 3;
-    left: 3;
-    /* margin-right: 30px; */
-    border: none;
-    height: 60px;
-    width: 88px;
     font-size: 28px;
-    background-color: rgb(170, 170, 170);
     color: aliceblue;
-
+    justify-self: start;
 }
 
 .game-board {
     margin: auto;
-    margin-top: 20px;
+    margin-block: 20px;
 }
 
 td {
-    /* border: 2px solid rgb(137, 137, 137); */
     margin: auto;
     margin-top: 30px;
     font-family: 'mineSweeperFont';
     font-size: 16px;
     height: 23px;
     width: 23px;
-    /* box-sizing: border-box; */
 }
 
 .hidden {
@@ -131,7 +124,6 @@ td {
     border-left: 3px rgb(220, 220, 220) solid;
     border-bottom: 3px rgb(145, 145, 145) solid;
     border-right: 3px rgb(145, 145, 145) solid;
-    /* box-sizing: border-box; */
 }
 
 .empty {
@@ -187,12 +179,53 @@ td {
 }
 
 footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background-color: #e2e2e2;
     border-top: 3px solid #030303;
     height: 60px;
-    font: bold;
     position: fixed;
     bottom: 0;
-    font-size: xx-large;
     width: 100%;
+}
+
+footer h1 {
+    font: bold;
+    font-size: xx-large;
+}
+
+@media (max-width: 890px) {
+    body {
+        width: 100%;
+        height: 100%;
+    }
+
+    header {
+        gap: 10px;
+        padding: 0;
+    }
+
+    header h1 {
+        font-size: 30px;
+        padding-block-end: 6px;
+    }
+
+    header img {
+        width: 30px;
+        height: 30px;
+    }
+
+    .diff-btns .btn-top {
+        font-size: 20px;
+    }
+
+    .container {
+        width: 100%;
+        border: none;
+    }
+
+    footer {
+        display: none;
+    }
 }

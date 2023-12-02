@@ -11,18 +11,24 @@
 </head>
 
 <body onload="onInit()">
-    <h1>minesweeper <img src="img/mine.png" alt=""></h1>
-    <button class="btn-top" onclick="onInit(4,2,1)">Easy</button> <button class="btn-top"
-        onclick="onInit(8,14,2)">Medium</button> <button class="btn-top" onclick="onInit(12,32,3)">Hard</button>
-    <button class="btn-top" onclick="onDarkMode()">Dark Mode 🌚</button>
+    <header>
+        <h1>minesweeper</h1>
+        <img src="img/mine.png" alt="">
+    </header>
+    <section class="diff-btns">
+        <button class="btn-top" onclick="onInit(6,7,1)">Easy</button>
+        <button class="btn-top" onclick="onInit(8,14,2)">Medium</button>
+        <button class="btn-top" onclick="onInit(12,32,3)">Hard</button>
+        <button class="btn-top" onclick="onDarkMode()">Dark Mode 🌚</button>
+    </section>
     <hr>
-    <br>
-    <br>
     <div class="timer"></div>
     <div class="container">
-        <div class="flags">🚩 2</div><button onclick="onInit()" class="happy">🙂
-        </button>
-        <div class="lives"></div>
+        <section class="game-container-header">
+            <div class="flags">🚩 2</div>
+            <button onclick="onInit()" class="happy">🙂</button>
+            <div class="lives"></div>
+        </section>
         <table oncontextmenu="return false;" class=" game-board"></table>
     </div>
     <br>
@@ -30,6 +36,8 @@
     <br>
     <br>
     <br>
-    <footer>Yaron levy &copy;</footer>
+    <footer>
+        <h1>Yaron levy &copy;</h1>
+    </footer>
     <script src="js/main.js"></script>
 </body>
