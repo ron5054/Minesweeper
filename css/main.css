@@ -223,6 +223,7 @@ footer h1 {
     .container {
         width: 100%;
         border: none;
+        min-width: unset;
     }
 
     footer {
